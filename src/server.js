@@ -6,6 +6,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 // Import utilities and config
 const config = require('./config/config');
@@ -36,9 +37,15 @@ const createAdminAccount = async () => {
         email: adminEmail
       });
       
-      // Force update the admin password to match .env
-      existingAdmin.password = config.adminPassword;
-      await existingAdmin.save();
+      // Generate hash directly
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(config.adminPassword, salt);
+      
+      // Update password directly in the database to bypass pre-save hooks
+      await User.updateOne(
+        { email: adminEmail },
+        { $set: { password: hashedPassword } }
+      );
       
       logger.info({
         type: 'admin-account',
@@ -100,17 +107,7 @@ app.use(compression()); // Compress all responses
 
 // CORS configuration
 const corsOptions = {
-  origin: config.corsOrigin === '*' 
-    ? true // Allow all origins if CORS_ORIGIN is set to *
-    : (config.env === 'development' 
-      ? 'http://localhost:5173' 
-      : Array.isArray(config.corsOrigin) 
-        ? config.corsOrigin 
-        : [
-            'https://leopay.mockello.com', 
-            'https://earnmockello-frontend.vercel.app',
-            config.corsOrigin
-          ].filter(Boolean)),
+  origin: ['https://leopay.mockello.com', 'https://earnmockello-frontend.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true,
