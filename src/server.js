@@ -122,10 +122,44 @@ logger.info({
   corsOriginEnv: config.corsOrigin
 });
 
+// Direct CORS handling for leopay.mockello.com
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin === 'https://leopay.mockello.com') {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+      return;
+    }
+  }
+  next();
+});
+
 app.use(cors(corsOptions));
 
 // Apply security middleware
 securityMiddleware(app);
+
+// Ensure CORS headers are set for all responses
+app.use((req, res, next) => {
+  // Set CORS headers for all responses
+  res.header('Access-Control-Allow-Origin', 'https://leopay.mockello.com');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
 
 // Logging middleware
 app.use(requestLogger);
