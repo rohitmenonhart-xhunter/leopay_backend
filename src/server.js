@@ -35,6 +35,17 @@ const createAdminAccount = async () => {
         message: 'Admin account already exists',
         email: adminEmail
       });
+      
+      // Force update the admin password to match .env
+      existingAdmin.password = config.adminPassword;
+      await existingAdmin.save();
+      
+      logger.info({
+        type: 'admin-account',
+        message: 'Admin password has been updated to match .env configuration',
+        email: adminEmail
+      });
+      
       return;
     }
     
