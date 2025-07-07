@@ -89,9 +89,11 @@ app.use(compression()); // Compress all responses
 
 // CORS configuration
 const corsOptions = {
-  origin: config.env === 'development' 
-    ? 'http://localhost:5173' 
-    : config.corsOrigin,
+  origin: config.corsOrigin === '*' 
+    ? true // Allow all origins if CORS_ORIGIN is set to *
+    : (config.env === 'development' 
+      ? 'http://localhost:5173' 
+      : ['https://leopay.mockello.com', config.corsOrigin].filter(Boolean)),
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true,
