@@ -93,12 +93,27 @@ const corsOptions = {
     ? true // Allow all origins if CORS_ORIGIN is set to *
     : (config.env === 'development' 
       ? 'http://localhost:5173' 
-      : ['https://leopay.mockello.com', config.corsOrigin].filter(Boolean)),
+      : Array.isArray(config.corsOrigin) 
+        ? config.corsOrigin 
+        : [
+            'https://leopay.mockello.com', 
+            'https://earnmockello-frontend.vercel.app',
+            config.corsOrigin
+          ].filter(Boolean)),
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true,
   maxAge: 86400 // 24 hours
 };
+
+// Print the CORS configuration for debugging
+logger.info({
+  type: 'cors-config',
+  message: 'CORS configuration initialized',
+  origin: corsOptions.origin,
+  corsOriginEnv: config.corsOrigin
+});
+
 app.use(cors(corsOptions));
 
 // Apply security middleware
