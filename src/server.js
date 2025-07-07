@@ -139,7 +139,7 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.status(200).json({ 
     success: true, 
-    message: 'EarnMockello API is running',
+    message: 'Leopay API is running',
     environment: config.env,
     version: process.env.npm_package_version || '1.0.0'
   });
