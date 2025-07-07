@@ -89,7 +89,9 @@ app.use(compression()); // Compress all responses
 
 // CORS configuration
 const corsOptions = {
-  origin: config.corsOrigin,
+  origin: config.env === 'development' 
+    ? 'http://localhost:5173' 
+    : config.corsOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   credentials: true,

@@ -34,11 +34,19 @@ const securityMiddleware = (app) => {
   // Rate limiting
   app.use('/api/', rateLimiter);
   
-  // Sanitize data
-  app.use(mongoSanitize());
+  // Sanitize data - DISABLED for Express 5 compatibility
+  // MongoDB sanitization is temporarily disabled due to compatibility issues with Express 5
+  logger.info({
+    type: 'security',
+    message: 'MongoDB sanitization middleware disabled due to Express 5 compatibility issues'
+  });
   
-  // Prevent XSS attacks
-  app.use(xss());
+  // Prevent XSS attacks - DISABLED for Express 5 compatibility
+  // XSS-clean is temporarily disabled due to compatibility issues with Express 5
+  logger.info({
+    type: 'security',
+    message: 'XSS-clean middleware disabled due to Express 5 compatibility issues'
+  });
   
   // Prevent HTTP Parameter Pollution
   app.use(hpp());

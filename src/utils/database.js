@@ -2,10 +2,8 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 const { logger } = require('./logger');
 
-// Configure Mongoose options
+// Configure Mongoose options - updated for Mongoose 7+
 const mongooseOptions = {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   maxPoolSize: config.mongoPoolSize,
   serverSelectionTimeoutMS: 30000, // 30 seconds
   socketTimeoutMS: 45000, // 45 seconds
